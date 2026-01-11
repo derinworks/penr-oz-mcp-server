@@ -19,17 +19,17 @@ fastmcp run server.py        # if using the FastMCP CLI
 
 ```text
 penr-oz-mcp-server/
-├── pyproject.toml
-├── README.md
-├── server.py
-├── app/
-│   ├── __init__.py
-│   ├── tools.py
-│   ├── resources.py
-│   ├── prompts.py
-│   └── config.py
-└── tests/
-    └── test_server_smoke.py
+|-- pyproject.toml
+|-- README.md
+|-- server.py
+|-- app/
+|   |-- __init__.py
+|   |-- tools.py
+|   |-- resources.py
+|   |-- prompts.py
+|   `-- config.py
+`-- tests/
+    `-- test_server_smoke.py
 ```
 
 ## Modules

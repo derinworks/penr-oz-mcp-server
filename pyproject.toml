@@ -10,11 +10,13 @@ authors = [
 ]
 dependencies = [
   "fastmcp",
-  "pydantic",
-  "python-dotenv",
 ]
 
 [project.optional-dependencies]
+optional = [
+  "pydantic",
+  "python-dotenv",
+]
 dev = [
   "pytest",
 ]
