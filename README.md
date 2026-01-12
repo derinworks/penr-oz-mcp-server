@@ -4,8 +4,21 @@ A minimal FastMCP-based server scaffold for the penr-oz project. This repository
 
 ## Install
 
+Create and activate a virtual environment first:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 ```bash
 pip install -e .
+```
+
+For development and testing:
+
+```bash
+pip install -e ".[dev]"
 ```
 
 ## Run

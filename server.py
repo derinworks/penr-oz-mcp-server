@@ -11,9 +11,9 @@ from app.tools import ping
 def create_mcp() -> FastMCP:
     """Create and configure the FastMCP server instance."""
     mcp = FastMCP(name=SERVER_NAME)
-    mcp.add_tool(ping)
-    mcp.add_resource(info)
-    mcp.add_prompt(summarize_prompt)
+    mcp.tool(ping)
+    mcp.resource("oz://info")(info)
+    mcp.prompt(summarize_prompt)
     return mcp
 
 
