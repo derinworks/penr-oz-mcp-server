@@ -1,0 +1,14 @@
+{
+  "name": "penr-oz-mcp-server",
+  "version": "0.1.0",
+  "features": [
+    "Sandboxed filesystem access",
+    "Directory listing",
+    "Text file reading",
+    "Resource protocol (ozfs://)"
+  ],
+  "security": {
+    "sandbox_enabled": true,
+    "directory_traversal_prevention": true
+  }
+}

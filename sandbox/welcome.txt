@@ -1,0 +1,6 @@
+Welcome to the penr-oz MCP server sandbox!
+
+This is a secure filesystem environment where you can safely read files and list directories.
+
+All paths are validated to prevent directory traversal attacks.
+Enjoy exploring!

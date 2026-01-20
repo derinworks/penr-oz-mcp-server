@@ -1,6 +1,6 @@
 # penr-oz MCP Server
 
-A minimal FastMCP-based server scaffold for the penr-oz project. This repository provides a clean starting point for adding tools, resources, and prompts.
+A FastMCP-based server for the penr-oz project with secure sandboxed filesystem operations. This repository provides tools for reading files and listing directories within a protected sandbox environment.
 
 ## Install
 
@@ -28,6 +28,37 @@ python server.py             # stdio server
 fastmcp run server.py        # if using the FastMCP CLI
 ```
 
+## Features
+
+### Sandboxed Filesystem Access
+
+The server provides secure, read-only access to files within a configured sandbox directory (`./sandbox/`). All file paths are validated to prevent directory traversal attacks.
+
+#### Tools
+
+**`list_files(path: str = "")`**
+- Lists files and directories within the sandbox
+- Returns metadata including name, type, path, and size
+- Example: `list_files("docs")` to list the docs subdirectory
+
+**`read_text_file(path: str)`**
+- Reads UTF-8 text content from files within the sandbox
+- Raises errors for non-existent files, directories, or invalid paths
+- Example: `read_text_file("welcome.txt")`
+
+#### Resources
+
+**`ozfs://{path}`**
+- Read-only file access via the ozfs:// protocol
+- Example: `ozfs://docs/guide.md` returns the file contents
+
+#### Security
+
+- All paths are restricted to the `./sandbox/` directory
+- Directory traversal attempts (e.g., `../`) are blocked
+- Paths are validated and resolved before access
+- Only UTF-8 text files can be read
+
 ## Project layout
 
 ```text
@@ -37,21 +68,29 @@ penr-oz-mcp-server/
 |-- server.py
 |-- app/
 |   |-- __init__.py
-|   |-- tools.py
-|   |-- resources.py
-|   |-- prompts.py
-|   `-- config.py
+|   |-- config.py          # Server configuration and sandbox settings
+|   |-- filesystem.py      # Filesystem operations with security validation
+|   |-- tools.py           # MCP tools (ping, list_files, read_text_file)
+|   |-- resources.py       # MCP resources (info, ozfs://)
+|   `-- prompts.py         # MCP prompt templates
+|-- sandbox/               # Sandboxed filesystem directory
+|   |-- README.md
+|   |-- welcome.txt
+|   |-- docs/
+|   `-- data/
 `-- tests/
-    `-- test_server_smoke.py
+    |-- test_server_smoke.py
+    `-- test_filesystem.py # Filesystem security and functionality tests
 ```
 
 ## Modules
 
-- `app/config.py` holds server metadata and environment flags.
-- `app/tools.py` defines MCP tools.
-- `app/resources.py` defines MCP resources.
-- `app/prompts.py` defines MCP prompt templates.
-- `server.py` wires everything together and starts the server.
+- `app/config.py` - Server metadata, environment flags, and sandbox configuration
+- `app/filesystem.py` - Secure filesystem operations with path validation
+- `app/tools.py` - MCP tools (ping, list_files, read_text_file)
+- `app/resources.py` - MCP resources (info, ozfs://)
+- `app/prompts.py` - MCP prompt templates
+- `server.py` - Server initialization and component registration
 
 ## Adding tools, resources, and prompts
 
