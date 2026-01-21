@@ -1,0 +1,7 @@
+Sample Notes
+============
+
+- The sandbox provides a secure environment for file operations
+- All paths are validated before access
+- Directory traversal attacks are prevented
+- Only UTF-8 text files can be read
