@@ -38,7 +38,8 @@ def validate_path(path: str) -> Path:
         sandbox_resolved = SANDBOX_ROOT.resolve()
 
         # Check if resolved path is within sandbox
-        if not str(full_path).startswith(str(sandbox_resolved)):
+        # Use is_relative_to() to prevent sibling directory attacks
+        if not full_path.is_relative_to(sandbox_resolved):
             raise PathValidationError(
                 f"Path '{path}' attempts to escape sandbox"
             )

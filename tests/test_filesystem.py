@@ -70,6 +70,14 @@ class TestPathValidation:
         # The path is treated as relative to sandbox
         assert result == SANDBOX_ROOT / "etc/passwd"
 
+    def test_prevent_sibling_directory_attack(self):
+        """Sibling directories with similar prefixes should be blocked."""
+        # If sandbox is at /path/to/sandbox, paths like ../sandbox_backup
+        # should be blocked even though "sandbox_backup" starts with "sandbox"
+        with pytest.raises(PathValidationError, match="escape sandbox"):
+            # Try to escape to a sibling directory
+            validate_path("../sandbox_sibling/secret.txt")
+
 
 class TestListDirectory:
     """Test directory listing functionality."""
