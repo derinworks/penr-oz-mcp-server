@@ -78,6 +78,40 @@ class TestPathValidation:
             # Try to escape to a sibling directory
             validate_path("../sandbox_sibling/secret.txt")
 
+    def test_reject_symlinks(self):
+        """Symlinks should be rejected to prevent information leakage."""
+        # Create a symlink in the sandbox
+        link_path = SANDBOX_ROOT / "test_link"
+        target_path = SANDBOX_ROOT / "welcome.txt"
+
+        try:
+            link_path.symlink_to(target_path)
+
+            # Accessing the symlink should raise an error
+            with pytest.raises(PathValidationError, match="Symlinks are not allowed"):
+                validate_path("test_link")
+        finally:
+            # Clean up
+            if link_path.exists():
+                link_path.unlink()
+
+    def test_reject_symlink_in_directory_path(self):
+        """Symlinks in directory paths should be rejected."""
+        # Create a symlinked directory
+        link_dir = SANDBOX_ROOT / "link_dir"
+        target_dir = SANDBOX_ROOT / "docs"
+
+        try:
+            link_dir.symlink_to(target_dir)
+
+            # Accessing through the symlinked directory should fail
+            with pytest.raises(PathValidationError, match="Symlinks are not allowed"):
+                validate_path("link_dir/guide.md")
+        finally:
+            # Clean up
+            if link_dir.exists():
+                link_dir.unlink()
+
 
 class TestListDirectory:
     """Test directory listing functionality."""
@@ -137,6 +171,26 @@ class TestListDirectory:
                 assert isinstance(entry["size"], int)
                 assert entry["size"] >= 0
 
+    def test_list_skips_symlinks(self):
+        """Directory listing should skip symlinks."""
+        # Create a symlink in a directory
+        link_path = SANDBOX_ROOT / "data" / "test_link"
+        target_path = SANDBOX_ROOT / "welcome.txt"
+
+        try:
+            link_path.symlink_to(target_path)
+
+            # List the directory
+            entries = list_directory("data")
+            names = [e["name"] for e in entries]
+
+            # Symlink should not appear in listing
+            assert "test_link" not in names
+        finally:
+            # Clean up
+            if link_path.exists():
+                link_path.unlink()
+
 
 class TestReadFile:
     """Test file reading functionality."""
@@ -180,6 +234,23 @@ class TestReadFile:
         content = read_file("/welcome.txt")
         assert isinstance(content, str)
         assert "Welcome" in content
+
+    def test_read_rejects_symlinks(self):
+        """Reading symlinks should be rejected."""
+        # Create a symlink
+        link_path = SANDBOX_ROOT / "read_link"
+        target_path = SANDBOX_ROOT / "welcome.txt"
+
+        try:
+            link_path.symlink_to(target_path)
+
+            # Reading the symlink should fail
+            with pytest.raises(PathValidationError, match="Symlinks are not allowed"):
+                read_file("read_link")
+        finally:
+            # Clean up
+            if link_path.exists():
+                link_path.unlink()
 
 
 class TestSandboxIntegration:

@@ -34,8 +34,24 @@ def validate_path(path: str) -> Path:
             # Remove leading slash for relative path
             path = path.lstrip('/')
 
-        full_path = (SANDBOX_ROOT / path).resolve()
+        candidate_path = SANDBOX_ROOT / path
+
+        # Check for symlinks before resolving to prevent information leakage
+        # Check the target path and all parent directories for symlinks
+        current = candidate_path
         sandbox_resolved = SANDBOX_ROOT.resolve()
+
+        while current != sandbox_resolved:
+            if current.exists() and current.is_symlink():
+                raise PathValidationError(
+                    f"Symlinks are not allowed: {path}"
+                )
+            if current == current.parent:
+                break
+            current = current.parent
+
+        # Now resolve to handle .. and check bounds
+        full_path = candidate_path.resolve()
 
         # Check if resolved path is within sandbox
         # Use is_relative_to() to prevent sibling directory attacks
@@ -75,15 +91,23 @@ def list_directory(path: str = "") -> List[Dict[str, str]]:
 
     entries = []
     for item in sorted(full_path.iterdir()):
+        # Skip symlinks to prevent information leakage outside sandbox
+        if item.is_symlink():
+            continue
+
+        # Use lstat() to avoid following symlinks
+        item_stat = item.lstat()
+        is_dir = item_stat.st_mode & 0o040000  # S_IFDIR
+
         entry = {
             "name": item.name,
-            "type": "directory" if item.is_dir() else "file",
+            "type": "directory" if is_dir else "file",
             "path": str(item.relative_to(SANDBOX_ROOT))
         }
 
-        # Add size for files
-        if item.is_file():
-            entry["size"] = item.stat().st_size
+        # Add size for files (using lstat data)
+        if not is_dir:
+            entry["size"] = item_stat.st_size
 
         entries.append(entry)
 
