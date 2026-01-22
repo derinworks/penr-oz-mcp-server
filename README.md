@@ -1,5 +1,7 @@
 # penr-oz MCP Server
 
+[![Tests](https://github.com/derinworks/penr-oz-mcp-server/actions/workflows/tests.yml/badge.svg)](https://github.com/derinworks/penr-oz-mcp-server/actions/workflows/tests.yml)
+
 A FastMCP-based server for the penr-oz project with secure sandboxed filesystem operations. This repository provides tools for reading files and listing directories within a protected sandbox environment.
 
 ## Install
@@ -105,6 +107,14 @@ mcp.add_tool(ping)
 
 ## Testing
 
+Run the test suite locally:
+
 ```bash
 pytest
 ```
+
+### Continuous Integration
+
+This project uses GitHub Actions to automatically run tests on every push and pull request. The CI workflow tests the codebase against Python 3.10, 3.11, and 3.12 to ensure compatibility across versions.
+
+Tests must pass before pull requests can be merged. You can view the test results in the [Actions tab](https://github.com/derinworks/penr-oz-mcp-server/actions) or by clicking the badge at the top of this README.
