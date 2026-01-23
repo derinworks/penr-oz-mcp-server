@@ -58,6 +58,32 @@ async def test_fetch_json_success(respx_mock):
 
 @pytest.mark.asyncio
 @respx.mock
+async def test_fetch_json_follows_redirects(respx_mock):
+    """Test that HTTP redirects are automatically followed."""
+    # Mock the final destination with JSON data
+    final_data = {"status": "success", "redirected": True}
+    respx_mock.get("https://api.example.com/final").mock(
+        return_value=httpx.Response(200, json=final_data)
+    )
+
+    # Mock the initial URL with a redirect
+    respx_mock.get("https://api.example.com/redirect").mock(
+        return_value=httpx.Response(
+            302,
+            headers={"Location": "https://api.example.com/final"}
+        )
+    )
+
+    # The redirect should be followed automatically
+    result = await fetch_json("https://api.example.com/redirect")
+
+    assert isinstance(result, dict)
+    assert result["status"] == "success"
+    assert result["redirected"] is True
+
+
+@pytest.mark.asyncio
+@respx.mock
 async def test_fetch_json_with_timeout(respx_mock):
     """Test that timeout error is properly raised."""
     # Mock a timeout

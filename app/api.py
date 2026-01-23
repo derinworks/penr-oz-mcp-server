@@ -63,7 +63,7 @@ async def fetch_json(url: str, timeout: float = 10.0) -> dict[str, Any]:
         )
 
     try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
             try:
                 response = await client.get(url)
                 response.raise_for_status()
