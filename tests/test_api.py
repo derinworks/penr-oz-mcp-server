@@ -1,6 +1,8 @@
 """Tests for API integration tools."""
 
 import pytest
+import respx
+import httpx
 from app.api import (
     fetch_json,
     InvalidURLError,
@@ -32,32 +34,74 @@ async def test_fetch_json_malformed_url():
 
 
 @pytest.mark.asyncio
-async def test_fetch_json_success():
-    """Test successful JSON fetch from a public API."""
-    # Using a reliable public API endpoint
-    result = await fetch_json("https://api.github.com/repos/python/cpython")
-
-    # Verify we got a dictionary back
-    assert isinstance(result, dict)
-    # Verify some expected fields exist
-    assert "name" in result
-    assert "full_name" in result
-
-
-@pytest.mark.asyncio
-async def test_fetch_json_with_timeout():
-    """Test that timeout parameter works."""
-    # This should work with a reasonable timeout
-    result = await fetch_json(
-        "https://api.github.com/repos/python/cpython",
-        timeout=30.0
+@respx.mock
+async def test_fetch_json_success(respx_mock):
+    """Test successful JSON fetch with mocked HTTP response."""
+    # Mock a successful JSON response
+    mock_data = {
+        "name": "cpython",
+        "full_name": "python/cpython",
+        "description": "The Python programming language"
+    }
+    respx_mock.get("https://api.example.com/data").mock(
+        return_value=httpx.Response(200, json=mock_data)
     )
+
+    result = await fetch_json("https://api.example.com/data")
+
+    # Verify we got the mocked data back
     assert isinstance(result, dict)
+    assert result["name"] == "cpython"
+    assert result["full_name"] == "python/cpython"
 
 
 @pytest.mark.asyncio
-async def test_fetch_json_http_error():
+@respx.mock
+async def test_fetch_json_with_timeout(respx_mock):
+    """Test that timeout error is properly raised."""
+    # Mock a timeout
+    respx_mock.get("https://api.example.com/slow").mock(
+        side_effect=httpx.TimeoutException("Connection timeout")
+    )
+
+    with pytest.raises(TimeoutError):
+        await fetch_json("https://api.example.com/slow", timeout=1.0)
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_fetch_json_http_error(respx_mock):
     """Test that HTTP errors are properly handled."""
-    # GitHub returns 404 for non-existent repos
+    # Mock a 404 response
+    respx_mock.get("https://api.example.com/notfound").mock(
+        return_value=httpx.Response(404, json={"error": "Not found"})
+    )
+
     with pytest.raises(HTTPError):
-        await fetch_json("https://api.github.com/repos/this-does-not-exist-12345/nope-12345")
+        await fetch_json("https://api.example.com/notfound")
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_fetch_json_invalid_json(respx_mock):
+    """Test that invalid JSON responses raise JSONDecodeError."""
+    # Mock a response with invalid JSON
+    respx_mock.get("https://api.example.com/invalid").mock(
+        return_value=httpx.Response(200, text="not valid json")
+    )
+
+    with pytest.raises(JSONDecodeError):
+        await fetch_json("https://api.example.com/invalid")
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_fetch_json_network_error(respx_mock):
+    """Test that network errors are properly handled."""
+    # Mock a network error
+    respx_mock.get("https://api.example.com/error").mock(
+        side_effect=httpx.ConnectError("Connection failed")
+    )
+
+    with pytest.raises(Exception):  # Will be wrapped in APIError
+        await fetch_json("https://api.example.com/error")

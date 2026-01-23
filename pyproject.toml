@@ -20,6 +20,8 @@ optional = [
 ]
 dev = [
   "pytest",
+  "pytest-asyncio",
+  "respx",  # HTTP mocking for httpx
 ]
 
 [build-system]
