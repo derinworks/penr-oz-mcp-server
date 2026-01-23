@@ -1,5 +1,6 @@
 """Tests for API integration tools."""
 
+import asyncio
 import pytest
 import respx
 import httpx
@@ -105,3 +106,24 @@ async def test_fetch_json_network_error(respx_mock):
 
     with pytest.raises(Exception):  # Will be wrapped in APIError
         await fetch_json("https://api.example.com/error")
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_fetch_json_cancelled_error_propagates(respx_mock):
+    """Test that CancelledError is properly propagated without wrapping."""
+    # Mock a slow response to allow cancellation
+    async def slow_response(request):
+        await asyncio.sleep(10)
+        return httpx.Response(200, json={"data": "value"})
+
+    respx_mock.get("https://api.example.com/slow").mock(side_effect=slow_response)
+
+    # Create a task and cancel it
+    task = asyncio.create_task(fetch_json("https://api.example.com/slow"))
+    await asyncio.sleep(0.1)  # Let the request start
+    task.cancel()
+
+    # CancelledError should propagate, not be wrapped in APIError
+    with pytest.raises(asyncio.CancelledError):
+        await task

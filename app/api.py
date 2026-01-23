@@ -1,5 +1,6 @@
 """API integration tools for external HTTP service calls."""
 
+import asyncio
 import httpx
 from typing import Any
 
@@ -92,6 +93,9 @@ async def fetch_json(url: str, timeout: float = 10.0) -> dict[str, Any]:
 
     except APIError:
         # Re-raise our custom exceptions
+        raise
+    except asyncio.CancelledError:
+        # Re-raise cancellation to allow proper task cleanup
         raise
     except Exception as e:
         # Catch any other unexpected errors
