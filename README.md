@@ -32,6 +32,39 @@ fastmcp run server.py        # if using the FastMCP CLI
 
 ## Features
 
+### API Integration Tools
+
+The server provides tools for integrating with external HTTP APIs, demonstrating asynchronous operations with comprehensive error handling.
+
+#### Tools
+
+**`fetch_json(url: str, timeout: float = 10.0)`**
+- Fetches JSON data from public HTTP APIs
+- Supports asynchronous operations with configurable timeout
+- Validates URLs and handles errors gracefully
+- Example: `fetch_json("https://api.github.com/repos/python/cpython")`
+
+**Error Handling:**
+- `InvalidURLError`: Malformed URLs or unsupported schemes
+- `TimeoutError`: Request exceeds timeout duration (default: 10s)
+- `HTTPError`: Server returns error status (4xx, 5xx)
+- `JSONDecodeError`: Response is not valid JSON
+- `APIError`: Other network or request errors
+
+**Usage Examples:**
+```python
+# Fetch repository information
+await fetch_json("https://api.github.com/repos/python/cpython")
+
+# With custom timeout
+await fetch_json("https://api.example.com/data", timeout=5.0)
+```
+
+**Out of Scope:**
+- Authentication and secrets management
+- Webhooks or streaming
+- Non-JSON responses
+
 ### Sandboxed Filesystem Access
 
 The server provides secure, read-only access to files within a configured sandbox directory (`./sandbox/`). All file paths are validated to prevent directory traversal attacks.
@@ -70,6 +103,7 @@ penr-oz-mcp-server/
 |-- server.py
 |-- app/
 |   |-- __init__.py
+|   |-- api.py             # API integration tools (fetch_json)
 |   |-- config.py          # Server configuration and sandbox settings
 |   |-- filesystem.py      # Filesystem operations with security validation
 |   |-- tools.py           # MCP tools (ping, list_files, read_text_file)
@@ -87,6 +121,7 @@ penr-oz-mcp-server/
 
 ## Modules
 
+- `app/api.py` - API integration tools for external HTTP services (fetch_json)
 - `app/config.py` - Server metadata, environment flags, and sandbox configuration
 - `app/filesystem.py` - Secure filesystem operations with path validation
 - `app/tools.py` - MCP tools (ping, list_files, read_text_file)
