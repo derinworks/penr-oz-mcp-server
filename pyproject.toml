@@ -10,6 +10,7 @@ authors = [
 ]
 dependencies = [
   "fastmcp",
+  "httpx",
 ]
 
 [project.optional-dependencies]
@@ -19,6 +20,8 @@ optional = [
 ]
 dev = [
   "pytest",
+  "pytest-asyncio",
+  "respx",  # HTTP mocking for httpx
 ]
 
 [build-system]

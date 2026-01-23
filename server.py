@@ -2,6 +2,7 @@
 
 from fastmcp import FastMCP
 
+from app.api import fetch_json
 from app.config import SERVER_NAME
 from app.prompts import summarize_prompt
 from app.resources import info, ozfs_resource
@@ -16,6 +17,7 @@ def create_mcp() -> FastMCP:
     mcp.tool(ping)
     mcp.tool(list_files)
     mcp.tool(read_text_file)
+    mcp.tool(fetch_json)
 
     # Register resources
     mcp.resource("oz://info")(info)
