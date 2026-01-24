@@ -10,6 +10,7 @@ from app.prompts import (
     analyze_code,
     write_design_doc,
     refactor_instructions,
+    summarize_prompt,  # Legacy alias for backward compatibility
 )
 from app.resources import info, ozfs_resource
 from app.tools import ping, list_files, read_text_file
@@ -35,6 +36,9 @@ def create_mcp() -> FastMCP:
     mcp.prompt(analyze_code)
     mcp.prompt(write_design_doc)
     mcp.prompt(refactor_instructions)
+
+    # Legacy prompts (for backward compatibility)
+    mcp.prompt(summarize_prompt)
 
     return mcp
 

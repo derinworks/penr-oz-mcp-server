@@ -139,3 +139,20 @@ Please provide:
 4. Any potential risks or considerations
 
 Refactoring Instructions:"""
+
+
+def summarize_prompt(text: str) -> str:
+    """
+    Legacy alias for summarize_text().
+
+    .. deprecated::
+        Use summarize_text() instead. This function is maintained for
+        backward compatibility with existing MCP clients.
+
+    Args:
+        text: The text content to be summarized
+
+    Returns:
+        A formatted prompt requesting a summary of the text
+    """
+    return summarize_text(text)

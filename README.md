@@ -67,6 +67,13 @@ The server provides a curated collection of reusable MCP prompts demonstrating b
 - Provides refactored code with risk considerations
 - Useful for: Technical debt resolution, code modernization, pattern improvements
 
+#### Backward Compatibility
+
+**`summarize_prompt(text: str)`** - *Deprecated*
+- Legacy alias for `summarize_text()`
+- Maintained for backward compatibility with existing MCP clients
+- Use `summarize_text()` for new integrations
+
 ### API Integration Tools
 
 The server provides tools for integrating with external HTTP APIs, demonstrating asynchronous operations with comprehensive error handling.
