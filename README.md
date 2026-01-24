@@ -32,6 +32,48 @@ fastmcp run server.py        # if using the FastMCP CLI
 
 ## Features
 
+### Core Reasoning Prompts
+
+The server provides a curated collection of reusable MCP prompts demonstrating best practices for common reasoning and analysis tasks.
+
+#### Available Prompts
+
+**`summarize_text(text: str)`**
+- Generate concise summaries of documents and articles
+- Extracts key points and main ideas from text content
+- Useful for: Documentation review, article analysis, content condensation
+
+**`extract_tasks(text: str)`**
+- Identify actionable tasks and TODOs from text
+- Parses meeting notes, documentation, and messages for work items
+- Formats tasks with deadlines and assignees when mentioned
+- Useful for: Meeting notes processing, project planning, task tracking
+
+**`analyze_code(code: str, language: str = "python")`**
+- Comprehensive code quality and structure analysis
+- Identifies potential bugs, code smells, and security vulnerabilities
+- Provides performance considerations and improvement suggestions
+- Useful for: Code reviews, technical debt assessment, learning best practices
+
+**`write_design_doc(feature_description: str, context: str = "")`**
+- Creates detailed technical design documents
+- Covers architecture, implementation approach, and trade-offs
+- Includes sections for security, testing, and risk analysis
+- Useful for: Feature planning, system design, architectural decisions
+
+**`refactor_instructions(code: str, issues: str, language: str = "python")`**
+- Generates step-by-step refactoring guidance
+- Explains rationale for each improvement
+- Provides refactored code with risk considerations
+- Useful for: Technical debt resolution, code modernization, pattern improvements
+
+#### Backward Compatibility
+
+**`summarize_prompt(text: str)`** - *Deprecated*
+- Legacy alias for `summarize_text()`
+- Maintained for backward compatibility with existing MCP clients
+- Use `summarize_text()` for new integrations
+
 ### API Integration Tools
 
 The server provides tools for integrating with external HTTP APIs, demonstrating asynchronous operations with comprehensive error handling.

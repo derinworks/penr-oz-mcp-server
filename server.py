@@ -4,7 +4,14 @@ from fastmcp import FastMCP
 
 from app.api import fetch_json
 from app.config import SERVER_NAME
-from app.prompts import summarize_prompt
+from app.prompts import (
+    summarize_text,
+    extract_tasks,
+    analyze_code,
+    write_design_doc,
+    refactor_instructions,
+    summarize_prompt,  # Legacy alias for backward compatibility
+)
 from app.resources import info, ozfs_resource
 from app.tools import ping, list_files, read_text_file
 
@@ -24,6 +31,13 @@ def create_mcp() -> FastMCP:
     mcp.resource("ozfs://{path}")(ozfs_resource)
 
     # Register prompts
+    mcp.prompt(summarize_text)
+    mcp.prompt(extract_tasks)
+    mcp.prompt(analyze_code)
+    mcp.prompt(write_design_doc)
+    mcp.prompt(refactor_instructions)
+
+    # Legacy prompts (for backward compatibility)
     mcp.prompt(summarize_prompt)
 
     return mcp
