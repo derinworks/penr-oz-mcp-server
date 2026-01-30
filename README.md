@@ -158,7 +158,9 @@ penr-oz-mcp-server/
 |   `-- data/
 `-- tests/
     |-- test_server_smoke.py
-    `-- test_filesystem.py # Filesystem security and functionality tests
+    |-- test_filesystem.py # Filesystem security and functionality tests
+    |-- test_api.py        # API integration tests
+    `-- test_prompts.py    # Prompt template tests
 ```
 
 ## Modules
